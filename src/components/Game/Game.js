@@ -3,6 +3,7 @@ import React from 'react';
 import { sample } from '../../utils';
 import { checkGuess } from "../../game-helpers";
 import { WORDS } from '../../data';
+import Banner from '../Banner/Banner';
 import GuessResults from '../GuessResults';
 import GuessInput from "../GuessInput/GuessInput";
 import { NUM_OF_GUESSES_ALLOWED } from "../../constants"; 
@@ -13,11 +14,16 @@ const answer = sample(WORDS);
 console.info({ answer });
 
 function Game() {
+  const [gameStatus, setGameStatus] = React.useState('running');
   const [guesses, setGuesses] = React.useState([]);
 
   function handleSubmitGuess(tentativeGuess) {
     if (guesses.length === NUM_OF_GUESSES_ALLOWED) {
       return
+    };
+
+    if (tentativeGuess === answer) {
+      setGameStatus('won');
     };
     
     const checkedGuess = checkGuess(tentativeGuess, answer)
@@ -27,8 +33,11 @@ function Game() {
 
   return (
     <>
+      {gameStatus !== 'running' && 
+        <Banner gameStatus={gameStatus} numOfGuesses={guesses.length}/>
+      }
       <GuessResults guesses={guesses} />
-      <GuessInput handleSubmitGuess={handleSubmitGuess} />
+      <GuessInput handleSubmitGuess={handleSubmitGuess} disabled={gameStatus !== 'running'}/>
     </>
   );
 }
